@@ -2,6 +2,7 @@ package net.engineeringdigest.journalApp.Controllers;
 
 import net.engineeringdigest.journalApp.Entity.JournalEntry;
 import net.engineeringdigest.journalApp.Entity.User;
+import net.engineeringdigest.journalApp.Services.SentimentAnalysisService;
 import net.engineeringdigest.journalApp.Services.UserService;
 import net.engineeringdigest.journalApp.Services.JournalEntryService;
 import org.bson.types.ObjectId;
@@ -24,6 +25,9 @@ public class JournalEntryController_V2 {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SentimentAnalysisService sentimentAnalysisService;
 
     //@GetMapping
     //It should Always be Public So that it can be accessed or invoked
@@ -56,6 +60,9 @@ public class JournalEntryController_V2 {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String username = authentication.getName();
+            // CALL SENTIMENT ANALYSIS HERE
+            String text = myEntry.getTitle() + " " + myEntry.getContent();
+            myEntry.setSentiment(sentimentAnalysisService.getSentiment(text));
             journalEntryService.saveEntry(myEntry,username); // tell the service to save That Entry
             return new ResponseEntity<>(myEntry, HttpStatus.CREATED);// Successful --> 201 Created
         }catch (Exception e){
@@ -134,6 +141,10 @@ public class JournalEntryController_V2 {
                 // Title null toh nai hai agr hai toh update mat karo , Title empty string toh nai hai dont update agr blank hai toh , Agar dono true hai toh lelo nai toh purana rehne do , old.setTitle ke sahare oldobject ke andr finaltitle set ho raha hai
                 old.setContent(newEntry.getContent()!=null && !newEntry.equals("") ? newEntry.getContent() : old.getContent());
                 //Agar newEntry ka Content null nahi hai aur empty string bhi nahi hai, toh naya content set karo. Nahi toh purana hi rehne do.
+
+                String text = old.getTitle() + " " + old.getContent();
+                old.setSentiment(sentimentAnalysisService.getSentiment(text));
+
                 journalEntryService.saveEntry(old);//After Updation Save It Again in Service
                 return new ResponseEntity<>(old, HttpStatus.OK);//Return Updated Entry
             }

@@ -1,0 +1,6 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://<USERNAME>:<PASSWORD>@cluster0.example.mongodb.net/journaldb?retryWrites=true&w=majority
+server:
+  port: 8080
