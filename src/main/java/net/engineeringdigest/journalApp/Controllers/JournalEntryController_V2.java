@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 @RestController //It is used to tell that this class is made for Http requests
 @RequestMapping("/journal") //Adds Mapping to the whole class
+@CrossOrigin
 public class JournalEntryController_V2 {
 
     @Autowired
